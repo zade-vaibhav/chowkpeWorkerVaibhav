@@ -9,7 +9,8 @@ import {
   ActivityIndicator,
   ScrollView,
   Pressable,
-  Alert
+  Alert,
+  Linking
 } from "react-native";
 import { format, addDays, isSameDay } from "date-fns";
 import Frame from "../../assets/images/skill/Vertical-Full.png";
@@ -29,6 +30,35 @@ const JobScreen = ({ navigation }) => {
   const [myId, setMyId] = useState("")
   const [isChange, setIsChange] = useState(false)
   const [lang, setLang] = useState("English")
+  const [phoneNumber, setPhoneNumber] = useState("+917387732902");
+  const [whatsappNumber, setWhatsappNumber] = useState("+917387732902");
+
+  const openWhatsApp = () => {
+    const formattedNumber = whatsappNumber.startsWith('+') ? whatsappNumber : `+${whatsappNumber}`;
+    const url = `whatsapp://send?phone=${formattedNumber}`;
+  
+    Linking.openURL(url)
+      .then((supported) => {
+        if (!supported) {
+          Alert.alert("Error", "WhatsApp is not installed on your device or the provided phone number is incorrect");
+        }
+      })
+      .catch((err) => console.error("An error occurred", err));
+  };
+
+  const dialCall = () => {
+    let phoneNumberURL = `tel:${phoneNumber}`;
+    Linking.canOpenURL(phoneNumberURL)
+      .then((supported) => {
+        if (!supported) {
+          Alert.alert("Error", "Dial pad cannot be opened on this device");
+        } else {
+          return Linking.openURL(phoneNumberURL);
+        }
+      })
+      .catch((err) => console.error("An error occurred", err));
+  };
+
 
 
   async function fetchData() {
@@ -185,14 +215,22 @@ const JobScreen = ({ navigation }) => {
             <Text style={styles.captainName}>{lang === 'English' ? 'Vishal' : 'विशाल'}</Text>
             <Text style={styles.captainDetails}>{lang === 'English' ? 'Call available 9am to 5pm' : '9 बजे से 5 बजे तक कॉल उपलब्ध है'}</Text>
           </View>
+           <Pressable
+          onPress={openWhatsApp}>
           <Image
             source={require('../../assets/images/whatsapp.png')}
             style={styles.captainIcons}
+            
           />
+          </Pressable>
+          <Pressable  onPress={dialCall}>
           <Image
             source={require('../../assets/images/phone.png')}
             style={styles.captainIcons}
+           
           />
+          </Pressable>
+        
         </View>
       </View>
 
